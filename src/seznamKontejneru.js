@@ -4,7 +4,7 @@ export const data = [{
   cisloKontejneru: "MEDU 56845-7",
   typKontejneru: "HC",
     velikostKontejneru: 40,
-    popUp: false
+    popUp: true
 },
 {
   id:2,
@@ -20,7 +20,7 @@ export const data = [{
   cisloKontejneru: "TUIO 31827-5",
   typKontejneru: "OT",
   velikostKontejneru: 40,
-  popUp: false
+  popUp: true
 },
 {
   id:4,

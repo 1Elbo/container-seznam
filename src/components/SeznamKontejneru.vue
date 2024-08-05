@@ -38,7 +38,7 @@
             class="kontejner"
             v-for="kont in filteredItems" :key="kont.id" 
             
-            @click="kont.popUp = !kont.popUp"
+            @click="togglePopUp(kont.id)"
             >
             <span>{{ kont.cisloKontejneru }}</span>
             <span>{{ kont.umisteniKontejneru }}</span>
@@ -65,9 +65,8 @@ import { data } from '@/seznamKontejneru.js';
 export default {
     
     setup () {
-        const seznamKontejneru = ref(data)
-        
-        const searchQuery = ref('');
+      const seznamKontejneru = ref(data)
+      const searchQuery = ref('');
     
         /* COMPUTED */   
     const filteredItems = computed(() => {
@@ -77,36 +76,39 @@ export default {
     });
 
     /* FUNCTIONS */
-
-        const kontejnerDelete = (id) => {
-           const index = seznamKontejneru.value.findIndex(kont => kont.id === id)
-            seznamKontejneru.value.splice(index, 1)
-        }
+    const togglePopUp = (id) => {
+      let hh=seznamKontejneru.value.map(kont => kont.popUp)
+      let gg = hh.find(item => item.id === id)  
+      console.log(gg + " POPUP")
+      console.log(hh)
+      console.log(id + " ID")
+    }
+    const kontejnerDelete = (id) => {
+      const index = seznamKontejneru.value.findIndex(kont => kont.id === id)
+        seznamKontejneru.value.splice(index, 1)
+    }
        
 
         /* ON MOUNTED*/
         
-        onMounted(() => {
-            window.eventBus.on("kontejner-add", event => {
-          /* Math.Max(...state.seznamKontejneru.map(id)) */
-                let maxId = Math.max(...seznamKontejneru.value.map(kont => kont.id))
-          data.push({
-            
-            id: maxId + 1,
-            cisloKontejneru:  event.cisloKontejneru,
-            umisteniKontejneru: event.umisteniKontejneru,
-            typKontejneru: event.typKontejneru,
-            velikostKontejneru: event.velikostKontejneru
+    onMounted(() => {
+      window.eventBus.on("kontejner-add", event => {
+        let maxId = Math.max(...seznamKontejneru.value.map(kont => kont.id))
+        data.push({
+          id: maxId + 1,
+          cisloKontejneru:  event.cisloKontejneru,
+          umisteniKontejneru: event.umisteniKontejneru,
+          typKontejneru: event.typKontejneru,
+          velikostKontejneru: event.velikostKontejneru
           })
-          
-          
         })
-        })
+      })
     
         return {
-        
-         kontejnerDelete, seznamKontejneru,searchQuery,
-         filteredItems, 
+          kontejnerDelete,
+          seznamKontejneru,searchQuery,
+          filteredItems,
+          togglePopUp
         }
     }
 }
