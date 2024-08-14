@@ -1,9 +1,11 @@
 <template>
   <aside>
     <img :src="logo" alt="" srcset="" />
-    <h2>Evidence kontejnerů</h2>
-    <router-link to="/seznam">Seznam kontejnerů</router-link>
-    <router-link to="/addContainer">Přidat kontejner</router-link>
+    <div class="links">
+      <h2>Evidence kontejnerů</h2>
+      <router-link to="/seznam">Seznam kontejnerů</router-link>
+      <router-link to="/addContainer">Přidat kontejner</router-link>
+    </div>
   </aside>
 </template>
 
@@ -44,13 +46,19 @@ export default {
 
 <style scoped>
 aside {
-  width: 25%;
+  width: 450px;
   height: 100vh;
 
   background-color: rgb(0, 199, 0);
   display: flex;
   align-items: center;
   flex-direction: column;
+}
+.links {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 img {
   width: 100px;
@@ -65,5 +73,22 @@ a {
 }
 nav:hover {
   transform: scale(1.02);
+}
+@media screen and (max-width: 900px) {
+  aside {
+    width: 100%;
+    height: 300px;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1rem;
+  }
+  aside img {
+    padding-top: 0;
+  }
+  .links {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+  }
 }
 </style>

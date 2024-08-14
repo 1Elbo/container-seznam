@@ -5,7 +5,8 @@ export const data = [
     cisloKontejneru: 'MEDU 56845-7',
     typKontejneru: 'HC',
     velikostKontejneru: 40,
-    popUp: true,
+    driverName: 'Petr Bačík',
+    popUp: false,
   },
   {
     id: 2,
@@ -13,6 +14,7 @@ export const data = [
     cisloKontejneru: 'AIUP 59218-5',
     typKontejneru: 'HC',
     velikostKontejneru: 20,
+    driverName: 'Ruslan Kakal',
     popUp: false,
   },
   {
@@ -21,7 +23,7 @@ export const data = [
     cisloKontejneru: 'TUIO 31827-5',
     typKontejneru: 'OT',
     velikostKontejneru: 40,
-    popUp: true,
+    popUp: false,
   },
   {
     id: 4,

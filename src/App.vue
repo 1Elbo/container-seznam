@@ -5,32 +5,13 @@
 
 <script>
 import SideBar from './components/SideBar.vue';
-import { reactive, toRefs, onMounted } from 'vue';
-
 export default {
   name: 'App',
   components: {
     SideBar,
   },
   setup() {
-    const state = reactive({
-      seznamActive: '',
-      kontejnerActive: true,
-    });
-    onMounted(() => {
-      window.eventBus.on('seznam-clicked', (event) => {
-        state.kontejnerActive = event.kontejnerActive;
-        state.seznamActive = event.seznamActive;
-      });
-      window.eventBus.on('kontejner-page-clicked', (even) => {
-        state.kontejnerActive = even.kontejnerActive;
-        state.seznamActive = even.seznamActive;
-      });
-    });
-
-    return {
-      ...toRefs(state),
-    };
+    return {};
   },
 };
 </script>
@@ -49,5 +30,10 @@ export default {
 }
 h1 {
   font-size: 3rem;
+}
+@media screen and (max-width: 900px) {
+  #app {
+    flex-direction: column;
+  }
 }
 </style>

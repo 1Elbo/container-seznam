@@ -9,55 +9,60 @@
         @input="filterList"
       />
     </div>
-    <div class="tabl">
-      <div class="nadpisy">
-        <span><h2>Číslo kontejneru</h2></span>
-        <span><h2>Umístění kontejneru</h2></span>
-        <span><h2>Typ kontejneru</h2></span>
-      </div>
-      <transition-group name="radek" tag="div">
-        <div
-          :class="kont.popUp ? 'deleting' : null"
-          class="kontejner"
-          v-for="kont in filteredItems"
-          :key="kont.id"
-          @click="togglePopUp(kont.id)"
+    <transition-group name="radek" tag="table" :key="-1">
+      <tr class="nadpisy" :key="1">
+        <td><h2>Číslo kontejneru</h2></td>
+        <td><h2>Umístění kontejneru</h2></td>
+        <td><h2>Typ kontejneru</h2></td>
+      </tr>
+      <tr
+        v-for="kont in filteredItems"
+        :key="kont.id"
+        class="kontejner"
+        @click="togglePopUp(kont.id)"
+      >
+        <td>{{ kont.cisloKontejneru }}</td>
+        <td>
+          {{ kont.umisteniKontejneru }}
+        </td>
+        <td
+          :class="
+            kont.typKontejneru === 'HC'
+              ? 'hc'
+              : kont.typKontejneru === 'DV'
+              ? 'dv'
+              : 'ot'
+          "
         >
-          <span>{{ kont.cisloKontejneru }}</span>
-          <span>{{ kont.umisteniKontejneru }}</span>
-          <span
-            :class="
-              kont.typKontejneru === 'HC'
-                ? 'hc'
-                : kont.typKontejneru === 'DV'
-                ? 'dv'
-                : 'ot'
-            "
-            >{{ kont.typKontejneru }}</span
-          >
-          <span
-            class="cross"
-            @click="kontejnerDelete(kont.id)"
-            v-if="kont.popUp"
-            >Odstranit</span
-          >
-        </div>
-      </transition-group>
-    </div>
-    <!-- <li v-for="item in filteredItems" :key="item.id">
-        {{ item.cisloKontejneru }}
-      </li> -->
+          {{ kont.typKontejneru }}
+        </td>
+      </tr>
+    </transition-group>
   </aside>
+  <Teleport to="table">
+    <ContainerDetailPopUp
+      v-if="isPopped"
+      :objectById="objectById"
+    ></ContainerDetailPopUp>
+  </Teleport>
 </template>
 
 <script>
-import { ref, onMounted, computed } from 'vue';
+import { reactive, toRefs, ref, onMounted, computed } from 'vue';
 import { data } from '@/seznamKontejneru.js';
+import ContainerDetailPopUp from '@/components/ContainerDetailPopUp.vue';
 
 export default {
+  components: {
+    ContainerDetailPopUp,
+  },
   setup() {
     const seznamKontejneru = ref(data);
     const searchQuery = ref('');
+    const state = reactive({
+      isPopped: false,
+      objectById: {},
+    });
 
     /* COMPUTED */
     const filteredItems = computed(() => {
@@ -70,21 +75,26 @@ export default {
 
     /* FUNCTIONS */
     const togglePopUp = (id) => {
-      let hh = seznamKontejneru.value.map((kont) => kont.popUp);
-      let gg = hh.find((item) => item.id === id);
-      console.log(gg + ' POPUP');
-      console.log(hh);
-      console.log(id + ' ID');
+      const object = seznamKontejneru.value.find((kont) => kont.id === id);
+      state.objectById = object;
+      state.isPopped = true;
+      setTimeout(() => {
+        state.isPopped = false;
+      }, 1500);
     };
     const kontejnerDelete = (id) => {
       const index = seznamKontejneru.value.findIndex((kont) => kont.id === id);
       seznamKontejneru.value.splice(index, 1);
     };
+    const editList = (id) => {
+      let object = seznamKontejneru.value.find((kont) => kont.id === id);
+      console.log(object.id);
+    };
 
     /* ON MOUNTED*/
 
     onMounted(() => {
-      window.eventBus.on('kontejner-add', (event) => {
+      window.eventBus.on('container-add', (event) => {
         let maxId = Math.max(...seznamKontejneru.value.map((kont) => kont.id));
         data.push({
           id: maxId + 1,
@@ -102,12 +112,19 @@ export default {
       searchQuery,
       filteredItems,
       togglePopUp,
+      editList,
+
+      ...toRefs(state),
     };
   },
 };
 </script>
 
 <style scoped>
+.popup {
+  width: 80%;
+  position: relative;
+}
 aside {
   width: 80%;
   height: 100vh;
@@ -119,9 +136,21 @@ aside {
   background-color: rgb(158, 252, 158);
 }
 table {
-  border: 1px solid black;
-
   width: 80%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+}
+tr {
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  position: relative;
+}
+td {
+  width: 30%;
 }
 h1 {
   padding-block: 2rem;
@@ -144,36 +173,12 @@ h1 {
   justify-content: space-around;
   width: 100%;
 }
-.nadpisy span,
-.kontejner span {
-  width: 30%;
-  text-align: center;
-}
-.kontejner span {
+.kontejner td {
   padding: 0.7rem;
 }
 .kontejner {
   background-color: #f8f8f8;
   position: relative;
-}
-.cross {
-  content: 'x';
-
-  color: red;
-  height: 40px;
-  width: 30px !important;
-  /* background-color: black; */
-  right: -50px;
-  margin-left: 75px;
-
-  position: absolute;
-}
-.cross:hover {
-  transform: scale(2);
-}
-.deleting {
-  border: 2px solid red;
-  box-sizing: border-box;
 }
 .kontejner:nth-child(even) {
   background-color: rgb(241, 241, 241);
@@ -208,9 +213,9 @@ h2 {
   color: rgba(17, 0, 255, 0.747);
   font-weight: 600;
 }
-table td:first-child {
+/* table td:first-child {
   padding-top: 5px;
-}
+} */
 
 .cross {
   color: red;
@@ -228,5 +233,29 @@ table td:first-child {
 .radek-leave-to {
   opacity: 0;
   transform: scale(0.75);
+}
+
+@media screen and (max-width: 900px) {
+  aside {
+    width: 100%;
+  }
+  table {
+    width: 98%;
+  }
+  /* table td:first-child {
+    padding-top: 0px;
+  } */
+  h1 {
+    text-align: center;
+  }
+  .nadpisy {
+    font-size: 0.6rem;
+  }
+  .kontejner {
+    font-size: 0.6rem;
+  }
+  .searchbar {
+    justify-content: center;
+  }
 }
 </style>

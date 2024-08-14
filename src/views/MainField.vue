@@ -3,7 +3,7 @@
     <header>
       <h1>Přidat kontejner</h1>
     </header>
-    <form class="section-one" @submit.prevent="zkouzkaPush">
+    <form class="section-one" @submit.prevent="submitForm">
       <div class="input-container">
         <input
           type="text"
@@ -52,12 +52,23 @@
       <button type="submit"></button>
     </form>
   </aside>
+
+  <Teleport to="body">
+    <Transition name="sucess">
+      <SuccessPop v-if="formSubmitted"></SuccessPop>
+    </Transition>
+  </Teleport>
 </template>
 
 <script>
 import { reactive, toRefs } from 'vue';
+import SuccessPop from '@/components/SuccessPop.vue';
+import { setTimeout } from 'core-js';
 
 export default {
+  components: {
+    SuccessPop,
+  },
   setup() {
     const state = reactive({
       /* seznamKontejneru: [], */
@@ -65,21 +76,26 @@ export default {
       umisteniKontejneru: '',
       typKontejneru: '',
       velikostKontejneru: '',
+      formSubmitted: false,
     });
-    const zkouzkaPush = () => {
-      /* state.seznamKontejneru.push(state.cisloKontejneru)
-            console.log("z main field" + state.seznamKontejneru) */
-      window.eventBus.emit('kontejner-add', {
+    const submitForm = () => {
+      window.eventBus.emit('container-add', {
         cisloKontejneru: state.cisloKontejneru,
         umisteniKontejneru: state.umisteniKontejneru,
         typKontejneru: state.typKontejneru,
         velikostKontejneru: state.velikostKontejneru,
       });
+
+      state.formSubmitted = true;
+      document.activeElement.blur();
+      setTimeout(() => {
+        state.formSubmitted = false;
+      }, 3000);
     };
 
     return {
       ...toRefs(state),
-      zkouzkaPush,
+      submitForm,
     };
   },
 };
@@ -131,7 +147,7 @@ button {
 }
 .input-container label {
   position: absolute;
-  top: 10px;
+  top: -25px;
   left: 5px;
   font-size: 16px;
   color: rgb(0, 177, 0);
@@ -151,9 +167,35 @@ button {
   border: 2px solid rgb(0, 177, 0);
   transform: scaleY(1.1);
 }
-.input-container input:focus ~ label,
-.input-container input:valid ~ label {
-  top: -21px;
-  font-size: 15px;
+.sucess-enter-active,
+.sucess-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.sucess-enter-from,
+.sucess-leave-to {
+  opacity: 0;
+}
+@media screen and (max-width: 900px) {
+  aside {
+    width: 100%;
+  }
+}
+@media screen and (max-width: 900px) {
+  .section-one {
+    flex-direction: column;
+    flex-wrap: nowrap;
+  }
+  .input-container {
+    flex: none;
+    margin-bottom: 0;
+    width: 80%;
+  }
+  header {
+    padding-bottom: 3rem;
+  }
+  h1 {
+    text-align: center;
+  }
 }
 </style>
